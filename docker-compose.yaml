@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  user-service:
+    build: ./user-service
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+    volumes:
+      - ./user-service:/app
+      - /app/node_modules
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+    volumes:
+      - ./product-service:/app
+      - /app/node_modules
+    depends_on:
+      - user-service

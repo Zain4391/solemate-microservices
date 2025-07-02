@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+@plugin "daisyui";
+
+:root {
+    --color-primary: #92400e;     /* amber-800 */
+    --color-secondary: #78716c;   /* stone-500 */
+    --color-accent: #d97706;      /* amber-600 */
+    --color-text: #1c1917;        /* stone-900 */
+    --color-text-light: #78716c;  /* stone-500 */
+    --color-bg: #ffffff;          /* white */
+    --color-bg-light: #fafaf9;    /* stone-50 */
+  }
+  
+  /* Default card styling */
+  .card {
+    @apply bg-white shadow-lg hover:shadow-xl transition-shadow;
+  }
+  
+  .card-title {
+    @apply text-stone-800;
+  }
+  
+  .btn-primary {
+    @apply bg-amber-800 hover:bg-amber-900 text-white border-amber-800;
+  }
+  
+  .text-primary {
+    @apply text-amber-700;
+  }
+  
+  .text-secondary {
+    @apply text-stone-600;
+  }

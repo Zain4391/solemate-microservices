@@ -15,6 +15,7 @@ import DashboardLayout from './pages/DashboardLayout';
 import ResetPassword from './pages/ResetPassword';
 import ProductsPage from './pages/ProductsPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
+import AboutPage from './pages/AboutPage.jsx';
 
 /* ACTION IMPORTS */
 import { loginAction } from './actions/loginAction.js';
@@ -68,6 +69,11 @@ const router = createBrowserRouter([
         element: <ProductPage />,
         loader: ({params}) => SingleProductLoader(params.id),
         errorElement: <Error />
+      },
+      {
+        path: '/about',
+        element: <AboutPage />,
+        errorElement: <Error />
       }
     ]
   },
@@ -97,7 +103,8 @@ const router = createBrowserRouter([
     path: '/terms',
     element: <Terms />,
     errorElement: <Error />
-  }
+  },
+  
 ]);
 
 const App = () => {

@@ -41,7 +41,9 @@ api.interceptors.response.use(
 export const productApi = {
 
     // product related
-    getAllProducts: () => api.get('/products'),
+    getAllProducts: (page = 1, limit = 10) => {
+        return api.get(`/products?page=${page}&limit=${limit}`);
+    },
     getProductById: (id) => api.get(`/products/${id}`),
     getProductSizes: (id) => api.get(`/products/${id}/sizes`),
     createProduct: (productData) => api.post('/products', productData),

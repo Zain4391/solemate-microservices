@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AboutUsPage = () => {
+  const navigate = useNavigate();
+
   // Counter animation hook
   const useCounter = (target, duration = 2000) => {
     const [count, setCount] = useState(0);
@@ -29,6 +32,12 @@ const AboutUsPage = () => {
     return [count, setIsVisible];
   };
 
+  // Counter values
+  const [customersCount, setCustomersVisible] = useCounter(50000, 2500);
+  const [brandsCount, setBrandsVisible] = useCounter(200, 2000);
+  const [productsCount, setProductsVisible] = useCounter(10000, 2200);
+  const [satisfactionCount, setSatisfactionVisible] = useCounter(99, 1800);
+
   // Intersection Observer for triggering animations
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -49,12 +58,6 @@ const AboutUsPage = () => {
 
     return () => observer.disconnect();
   }, []);
-
-  // Counter values
-  const [customersCount, setCustomersVisible] = useCounter(50000, 2500);
-  const [brandsCount, setBrandsVisible] = useCounter(200, 2000);
-  const [productsCount, setProductsVisible] = useCounter(10000, 2200);
-  const [satisfactionCount, setSatisfactionVisible] = useCounter(99, 1800);
 
   // Handle counter trigger
   useEffect(() => {
@@ -79,6 +82,12 @@ const AboutUsPage = () => {
     }
     return `${num}${num === target && target < 100 ? '%' : (num === target ? '+' : '')}`;
   };
+
+  // Handle Shop Now button click
+  const handleShopNowClick = () => {
+    navigate('/products');
+  };
+
   return (
     <div className='bg-stone-50 min-h-screen'>
       {/* Hero Section */}
@@ -271,7 +280,10 @@ const AboutUsPage = () => {
           <p className='text-xl text-stone-600 mb-8 max-w-2xl mx-auto'>
             Join thousands of satisfied customers who have found their sole mate with us. Browse our collection and discover your next favorite pair of shoes.
           </p>
-          <button className='bg-amber-700 hover:bg-amber-800 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 shadow-lg hover:shadow-xl'>
+          <button 
+            onClick={handleShopNowClick} 
+            className='bg-amber-700 hover:bg-amber-800 text-white font-semibold py-4 px-8 rounded-lg text-lg transition-all duration-200 shadow-lg hover:shadow-xl'
+          >
             Shop Now
           </button>
         </div>

@@ -248,6 +248,27 @@ class OrderService {
             throw new Error(`Error updating order address: ${error.message}`);
         }
     }
+
+    async updateOrderPromiseDate(orderId, promiseDate) {
+        try {
+            const { data, error } = await supabase
+            .from("order")
+            .update({
+                promise_date: promiseDate
+            })
+            .eq("o_id", orderId);
+
+            if(error) {
+                throw new Error (`Error updating Promise date: ${error.message}`);
+            }
+
+            return {
+                data: data
+            }
+        } catch (error) {
+            throw new Error(`Error updating order promise date: ${error.message}`);
+        }
+    }
 }
 
 export default new OrderService();

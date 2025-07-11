@@ -4,7 +4,8 @@ import morgan from 'morgan';
 import errorHandler from 'errorhandler';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
-
+import cartRouter from './routes/carRoutes.js';
+import orderRouter from './routes/orderRoutes.js';
 
 dotenv.config();
 
@@ -18,6 +19,9 @@ app.use(helmet());
 app.use(errorHandler());
 
 const PORT = process.env.PORT || 3003;
+
+app.use('/api/cart', cartRouter);
+app.use('/api/orders', orderRouter);
 
 app.get('/', (req, res) => {
     res.json({ 

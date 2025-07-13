@@ -16,7 +16,7 @@ class CartService {
             const { data, error } = await supabase.from('cart').insert({
                 cart_id: cartId,
                 user_id: userId,
-                product_id: productId,
+                product_p_id: productId,
                 size: size,
                 quantity: quantity
             });
@@ -38,9 +38,9 @@ class CartService {
             .select(`
                 *,
                 product(
-                    name,
+                    p_name,
                     price,
-                    P_Images (
+                    P_Images(
                         image_url
                     )
                 )

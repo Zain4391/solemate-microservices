@@ -13,11 +13,11 @@ class OrderService {
     async createOrder(userId, address, totalAmount, promiseDate) {
         try {
             const orderId = uuidv4();
-            const { data, error } = await supabase.from('order').insert({
+            const { data, error } = await supabase.from('Order').insert({
                 o_id: orderId,
                 user_u_id: userId,
                 order_date: new Date().toISOString(),
-                promise_date: promiseDate,
+                promised_date: promiseDate,
                 address: address,
                 total_amount: totalAmount,
                 is_complete: false
@@ -38,7 +38,7 @@ class OrderService {
 
     async getAllOrders() {
         try {
-            const { data, error} = await supabase.from('order').select('*');
+            const { data, error} = await supabase.from('Order').select('*');
 
             if (error) {
                 throw new Error(`Error fetching orders: ${error.message}`);
@@ -62,10 +62,18 @@ class OrderService {
                 throw new Error(`Error fetching cart items: ${cartError.message}`);
             }
 
+            if (!cartData || cartData.length === 0) {
+                throw new Error('No items in cart');
+            }
+
+            console.log(`Cart: ${JSON.stringify(cartData)}`);
+            
+
             const orderDetailsData = cartData.map(item => ({
+                
                 od_id: uuidv4(),
                 quantity: item.quantity,
-                od_price: item.products.price,
+                od_price: item.product.price,
                 product_p_id: item.product_p_id,
                 order_o_id: orderId,
                 user_id: userId,
@@ -89,7 +97,7 @@ class OrderService {
 
     async getOrderById(orderId) {
         try {
-            const { data, error } = await supabase.from('order').select('*').eq('o_id', orderId);
+            const { data, error } = await supabase.from('Order').select('*').eq('o_id', orderId);
             if (error) {
                 throw new Error(`Error fetching order by ID: ${error.message}`);
             }
@@ -107,7 +115,7 @@ class OrderService {
 
     async getAllUserOrders(userId) {
         try {
-            const { data, error } = await supabase.from('order').select('*').eq('user_u_id', userId);
+            const { data, error } = await supabase.from('Order').select('*').eq('user_u_id', userId);
 
             if(error) {
                 throw new Error(`Error fetching user orders: ${error.message}`);
@@ -128,7 +136,7 @@ class OrderService {
     async updateOrderStatus(orderId, isComplete) {
         try {
             const { data, error } = await supabase
-                .from('order')
+                .from('Order')
                 .update({
                     is_complete: isComplete
                 })
@@ -160,7 +168,7 @@ class OrderService {
     
             // Then delete the order
             const { data, error } = await supabase
-                .from('order')
+                .from('Order')
                 .delete()
                 .eq('o_id', orderId);
     
@@ -183,11 +191,12 @@ class OrderService {
                 .select(`
                     *,
                     product(
-                        name,
-                        description,
+                        p_name,
+                        brand,
                         P_Images(
                             image_url
-                        )
+                        ),
+                        category( description )
                     )
                 `)
                 .eq('order_o_id', orderId);
@@ -211,7 +220,7 @@ class OrderService {
     async getOrdersByStatus(isComplete) {
         try {
             const { data, error } = await supabase
-                .from('order')
+                .from('Order')
                 .select('*')
                 .eq('is_complete', isComplete)
                 .order('order_date', { ascending: false });
@@ -231,7 +240,7 @@ class OrderService {
     async updateOrderAddress(orderId, newAddress) {
         try {
             const { data, error } = await supabase
-                .from('order')
+                .from('Order')
                 .update({
                     address: newAddress
                 })
@@ -252,9 +261,9 @@ class OrderService {
     async updateOrderPromiseDate(orderId, promiseDate) {
         try {
             const { data, error } = await supabase
-            .from("order")
+            .from("Order")
             .update({
-                promise_date: promiseDate
+                promised_date: promiseDate
             })
             .eq("o_id", orderId);
 

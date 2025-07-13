@@ -19,7 +19,7 @@ import {
     updateOrderAddress,
     updatePromiseDate,
     deleteOrder,
-    moveCartToOrder
+    moveCartToOrderDetails
 } from '../controllers/orderController.js';
 
 const orderRouter = express.Router();
@@ -33,7 +33,7 @@ orderRouter.delete('/:orderId', authMiddleware, adminMiddleware, deleteOrder);
 orderRouter.post('/', authMiddleware, createOrder);
 orderRouter.get('/:orderId', authMiddleware, getOrderById);
 orderRouter.get('/users/:userId', authMiddleware, getUserOrders); 
-orderRouter.post('/move-cart', authMiddleware, moveCartToOrder);
+orderRouter.post('/move-cart', authMiddleware, moveCartToOrderDetails);
 orderRouter.put('/:orderId/status', authMiddleware, updateOrderStatus);
 orderRouter.get('/:orderId/details', authMiddleware, getOrderDetails);
 orderRouter.put('/:orderId/address', authMiddleware, updateOrderAddress);

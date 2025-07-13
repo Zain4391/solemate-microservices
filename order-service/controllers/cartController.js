@@ -41,7 +41,7 @@ export const addToCart = async (req, res) => {
             });
         }
         const response = await cartService.createCart(userId, productId, size, quantity);
-        return res.status(201).jso({
+        return res.status(201).json({
             message: "Item added to cart.",
             success: true,
             data: response.data

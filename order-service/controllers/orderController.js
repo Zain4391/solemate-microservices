@@ -109,14 +109,14 @@ export const moveCartToOrderDetails = async (req, res) => {
         const { userId, orderId } = req.body;
 
         if(!userId || !orderId) {
-            return req.res(400).json({
+            return res.status(400).json({
                 message: "Bad request, all fields needed",
                 success: false
             });
         }
 
         const response = await orderService.moveCartToOrderDetails(userId, orderId);
-        return req.status(200).json({
+        return res.status(200).json({
             message: "Cart moved to order details successfully",
             success: true,
             data: response.data

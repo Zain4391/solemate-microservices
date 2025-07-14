@@ -23,5 +23,15 @@ services:
     volumes:
       - ./product-service:/app
       - /app/node_modules
-    depends_on:
-      - user-service
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "3003:3003"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+    volumes:
+      - ./order-service:/app
+      - /app/node_modules

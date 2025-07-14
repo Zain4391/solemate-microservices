@@ -19,35 +19,31 @@ SOLEMATE is being migrated from a monolithic PERN stack to a distributed microse
 ### ✅ User Service (Day 1) - COMPLETED
 - **Port**: 3001
 - **Responsibilities**: User authentication, registration, profile management
-- **Status**: Basic structure implemented and running
-- **Endpoints**:
-  - `GET /` - Service health check
-  - `GET /health` - Detailed health status
+- **Status**: Fully implemented and running
+
+
+
+### ✅ Products Service (Day 1) - COMPLETED
+- **Port**: 3002
+- **Responsibilities**: Fetching, creating and filtering products
+- **Status**: Fully implemented and running
+
+
+### ✅ Order Service (Day 1) - COMPLETED
+- **Port**: 3002
+- **Responsibilities**: Creating orders, cart services etc
+- **Status**: Fully implemented and running
+
 
 ### 🚧 Upcoming Services
 
-- **Product Service** (Day 2-5): Product catalog, images, sizes, categories
-- **Order Service** (Day 6-10): Order processing, order details
 - **Payment Service** (Day 11-15): Payment processing and tracking
-- **Cart Service** (Day 16-20): Shopping cart management
-- **Search Service** (Day 21-25): Product search and filtering
 - **API Gateway** (Day 26-30): Request routing and authentication
 
-## 🗄️ Database Schema
+## 🗄️ Database 
 
 ### Current Tables
 - `users` (User Service)
-  - u_id (varchar) - Primary Key
-  - is_admin (bpchar)
-  - first_name (varchar)
-  - last_name (varchar)
-  - email (varchar) - Unique
-  - password (varchar)
-  - phone_number (numerical)
-  - created_at (timestamp) - Added
-  - updated_at (timestamp) - Added
-  - deleted_at (timestamp) - Added (soft delete)
-
 - `product` (Product Service)
 - `P_Images` (Product Service)
 - `P_Size` (Product Service)
@@ -55,6 +51,7 @@ SOLEMATE is being migrated from a monolithic PERN stack to a distributed microse
 - `Order` (Order Service)
 - `order_details` (Order Service)
 - `payment` (Payment Service)
+- 'reviews' (Review Service) - {Planned}
 
 ## 🚀 Getting Started
 
@@ -96,9 +93,9 @@ SOLEMATE is being migrated from a monolithic PERN stack to a distributed microse
 
 ### Running Individual Services
 
-**User Service:**
+**Any Service:**
 ```bash
-cd user-service
+cd <service-name>
 npm install
 npm run dev  # Development mode
 npm start    # Production mode
@@ -158,7 +155,7 @@ docker-compose up --build --force-recreate
 Services run locally using Docker Compose with hot reloading.
 
 ### Production (Planned)
-- Container orchestration with Kubernetes
+- Deploy using oracle cloud free tier
 - CI/CD pipeline setup
 - Environment-specific configurations
 - Load balancing and scaling

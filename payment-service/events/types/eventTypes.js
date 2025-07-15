@@ -1,6 +1,6 @@
 /**
  * Event Types for Payment Service
- * Defines all events that can be published/subscribed to
+ * Defines Payment related events that can be published/subscribed to
  */
 
 export const PAYMENT_EVENTS = {
@@ -13,8 +13,7 @@ export const PAYMENT_EVENTS = {
     STOCK_UPDATE_REQUIRED: 'product.stock_update_required'
 };
 
+
 export const EVENT_CHANNELS = {
     PAYMENTS: 'payments_channel',
-    ORDERS: 'orders_channel', 
-    PRODUCTS: 'products_channel'
 };

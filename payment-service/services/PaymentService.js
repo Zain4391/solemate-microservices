@@ -7,6 +7,7 @@
  */
 import supabase from '../config/Database.js';
 import { stripe } from '../config/Stripe.js';
+import paymentPublisher from '../events/publishers/paymentPublisher.js';
 
 class PaymentService {
 
@@ -47,6 +48,8 @@ class PaymentService {
             if(error) {
                 throw new Error(`Error creating payment: ${error.message}`);
             }
+
+            await paymentPublisher.publishPaymentCreated(data);
 
             return {
                 data: data
@@ -92,6 +95,10 @@ class PaymentService {
             
             if (error) {
                 throw new Error(`Error updating payment: ${error.message}`);
+            }
+
+            if(status == "COMPLETED") {
+                await paymentPublisher.publishPaymentCompleted(data);
             }
             
             return {

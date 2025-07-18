@@ -15,7 +15,8 @@ class OrderPublisher extends BasePublisher {
         await this.publish(ORDER_EVENTS.ORDER_COMPLETED, {
             order_id: orderData.order_id,
             user_id: orderData.user_id,
-            payment_id: orderData.payment_id
+            payment_id: orderData.payment_id,
+            items: orderData.items
         });
     }
 };

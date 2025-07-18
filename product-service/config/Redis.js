@@ -9,13 +9,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const redisClient = createClient({
-    host: process.env.REDIS_HOST || 'localhost',
-    port: process.env.REDIS_PORT || 6379,
-    password: process.env.REDIS_PASSWORD || undefined
+    url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
 });
 
 // handle connection and error evens
-redisClient.on('connet', () => {
+redisClient.on('connect', () => {
     console.log(`Connected to Redis/Valkey`);
 });
 

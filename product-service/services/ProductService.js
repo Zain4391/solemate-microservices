@@ -351,6 +351,25 @@ class ProductService {
         }
     }
 
+    async getCurrentStock(productId, size) {
+        try {
+            const { data, error } = await supabase
+                .from('P_Size')
+                .select('stock')
+                .eq('product_id', productId)
+                .eq('size', size)
+                .single();
+            
+            if (error) {
+                throw new Error(`Error getting current stock: ${error.message}`);
+            }
+            
+            return data.stock;
+        } catch (error) {
+            throw new Error(`Error getting current stock: ${error.message}`);
+        }
+    }
+
     // DELETE methods
     async deleteProduct(productId) {
         try {

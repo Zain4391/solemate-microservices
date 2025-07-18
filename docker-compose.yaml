@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  valkey:
+    image: valkey/valkey:latest
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: valkey-server --appendonly yes
+    volumes:
+      - valkey_data:/data
+
   user-service:
     build: ./user-service
     ports:
@@ -20,6 +29,10 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3002
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+    depends_on:
+      - valkey
     volumes:
       - ./product-service:/app
       - /app/node_modules
@@ -32,6 +45,29 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3003
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+    depends_on:
+      - valkey
     volumes:
       - ./order-service:/app
       - /app/node_modules
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "3004:3004"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3004
+      - REDIS_HOST=valkey
+      - REDIS_PORT=6379
+    depends_on:
+      - valkey
+    volumes:
+      - ./payment-service:/app
+      - /app/node_modules
+
+volumes:
+  valkey_data:

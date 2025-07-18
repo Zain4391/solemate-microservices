@@ -7,6 +7,10 @@ import dotenv from 'dotenv';
 import cartRouter from './routes/carRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 
+import paymentListener from "./events/listeners/paymentListener.js";
+
+
+
 dotenv.config();
 
 const app = express();
@@ -45,4 +49,6 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Service running on PORT: ${PORT}`);
+    paymentListener.listen();
+    console.log(`Order Listener started!`);
 });

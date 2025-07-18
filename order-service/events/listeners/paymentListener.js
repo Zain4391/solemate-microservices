@@ -1,6 +1,8 @@
 /**
  * Payment Listener for Order Service
  * Listens for payment completion events and updates orders
+ * @author: Zain Rasool
+ * @version: 1.0.0
  */
 
 import redisClient from "../../config/Redis.js";
@@ -9,7 +11,7 @@ import orderPublisher from "../publishers/orderPublisher.js";
 
 class PaymentListener {
     constructor() {
-        this.channel = 'payments.channel';
+        this.channel = 'payments_channel';
     }
 
     async handlePaymentCompleted(paymentData) {
@@ -19,6 +21,13 @@ class PaymentListener {
             const orderDetailsResult = await OrderService.getOrderDetails(paymentData.order_id);
 
             await OrderService.updateOrderStatus(paymentData.order_id, true);
+
+            console.log('📦 Order details result:', orderDetailsResult);
+            console.log('📦 Items being sent:', orderDetailsResult.data.map(item => ({
+                product_id: item.product_p_id,
+                quantity: item.quantity,
+                size: item.size
+            })));
 
             await orderPublisher.publishOrderCompleted({
                 order_id: paymentData.order_id,
@@ -44,7 +53,9 @@ class PaymentListener {
         console.log("Order service listening for payment events...");
         subscriber.subscribe(this.channel, async (message) => {
             try {
+                console.log('📨 Order Service received message:', message)
                 const event = JSON.parse(message);
+                console.log('📨 Parsed event:', event);
 
                 if(event.type === 'payment.completed') {
                     await this.handlePaymentCompleted(event.data);

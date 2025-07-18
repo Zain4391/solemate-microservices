@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 
 import productRouter from './routes/productRoutes.js';
+import orderListener from "./events/listeners/orderListener.js";
+
 
 dotenv.config();
 
@@ -43,4 +45,6 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Service running on PORT: ${PORT}`);
+    orderListener.listen();
+    console.log(`Product Service listener started`);
 });

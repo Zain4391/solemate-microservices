@@ -3,13 +3,12 @@ Centralizes axios instance for api management
 api => instance of axios with default config
 */
 
-import axios from 'axios';
+import axios from "axios"
 
-const APP_BASE_URL = 'http://localhost:3001/api';
-
+const CART_BASE_URL = "http://localhost:3003/api/cart"
 
 export const api = axios.create({
-    baseURL: APP_BASE_URL,
+    baseURL: CART_BASE_URL,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -42,22 +41,10 @@ api.interceptors.response.use(
     }
 )
 
-export const authApi = {
-    register: (userData) => api.post('/auth/sign-in', userData),
-    login: (userData) => api.post('/auth/login', userData),
-    resetPassword: (email, password) => api.post('/auth/reset-password', {
-        email,
-        password
-    })
-}
-
-export const userApi = {
-    getProfile: () => api.get('/users/profile'),
-    updateProfile: (userData) => api.put('/users/profile', userData),
-    deleteAccount: () => api.delete('/users/account'),
-
-    // admin ops
-    getAllUsers: () => api.get('/users/users'),
-    getUserById: (id) => api.get(`/users/users/${id}`),
-    deleteUser: (id) => api.delete(`/users/users/${id}`)
+export const cartApi = {
+    getCart: (id) => api.get(`/users/${id}`),
+    createCart: (cartData) => api.post('/', cartData),
+    updateCart: (cartId, updateData) => api.put(`/${cartId}`, updateData),
+    removeItemFromCart: (cartId) => api.delete(`/${cartId}`),
+    clearCart: (id) => api.delete(`/users/${id}`)
 }

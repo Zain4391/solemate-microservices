@@ -1,30 +1,7 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Landing = () => {
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Urban Runner Pro",
-      price: "$129.99",
-      image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
-      category: "Running"
-    },
-    {
-      id: 2,
-      name: "Classic Leather Boots",
-      price: "$189.99",
-      image: "https://images.unsplash.com/photo-1544966503-7cc5ac882d5d?w=400&h=300&fit=crop",
-      category: "Casual"
-    },
-    {
-      id: 3,
-      name: "Sport Elite Sneakers",
-      price: "$159.99",
-      image: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400&h=300&fit=crop",
-      category: "Athletic"
-    }
-  ];
-
   const categories = [
     { name: "Running", icon: "🏃‍♂️", count: "120+ styles" },
     { name: "Casual", icon: "👟", count: "200+ styles" },
@@ -33,88 +10,162 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <motion.div 
+      className="min-h-screen" 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.8 }}
+    >
       {/* Hero Section */}
-        {/* Hero Section */}
-<div className="hero min-h-screen relative overflow-hidden">
-  {/* Background Image with multiple fallback options */}
-  <div 
-    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-    style={{
-      backgroundImage: `
-        url('https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80'),
-        url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1926&q=80'),
-        linear-gradient(135deg, #78716c 0%, #d97706 100%)
-      `
-    }}
-  >
-    {/* Overlay for better text readability */}
-    <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-stone-900/40 to-amber-900/30"></div>
-  </div>
-  
-  
-  {/* Content */}
-  <div className="hero-content text-center relative z-10">
-    <div className="max-w-4xl">
-      <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl">
-        Find Your Perfect
-        <span className="text-amber-700 block drop-shadow-2xl">SOLEMATE</span>
-      </h1>
-      <p className="text-xl md:text-2xl text-stone-100 mb-8 max-w-2xl mx-auto drop-shadow-lg">
-        Step into comfort, style, and quality. Discover our curated collection 
-        of premium footwear for every occasion.
-      </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Link to="/products" className="btn btn-primary btn-lg bg-amber-800 hover:bg-amber-900 border-amber-800 text-white shadow-xl transform hover:scale-105 transition-all">
-          Shop Now
-        </Link>
-        <Link to="/register" className="btn btn-outline btn-lg border-white text-white hover:bg-white hover:text-stone-800 shadow-xl transform hover:scale-105 transition-all">
-          Join SOLEMATE
-        </Link>
-      </div>
-    </div>
-  </div>
-</div>
+      <motion.div 
+        className="hero min-h-screen relative overflow-hidden"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
+      >
+        {/* Background Image with multiple fallback options */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `
+              url('https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80'),
+              url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=1926&q=80'),
+              linear-gradient(135deg, #78716c 0%, #d97706 100%)
+            `
+          }}
+        >
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-stone-900/40 to-amber-900/30"></div>
+        </div>
+        
+        {/* Content */}
+        <motion.div 
+          className="hero-content text-center relative z-10"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4 }}
+        >
+          <div className="max-w-4xl">
+            <motion.h1 
+              className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+              Find Your Perfect
+              <span className="text-amber-700 block drop-shadow-2xl">SOLEMATE</span>
+            </motion.h1>
+            
+            <motion.p 
+              className="text-xl md:text-2xl text-stone-100 mb-8 max-w-2xl mx-auto drop-shadow-lg"
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+            >
+              Step into comfort, style, and quality. Discover our curated collection 
+              of premium footwear for every occasion.
+            </motion.p>
+            
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 1, duration: 0.8 }}
+            >
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/products" className="btn btn-primary btn-lg bg-amber-800 hover:bg-amber-900 border-amber-800 text-white shadow-xl transform hover:scale-105 transition-all">
+                  Shop Now
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Link to="/register" className="btn btn-outline btn-lg border-white text-white hover:bg-white hover:text-stone-800 shadow-xl transform hover:scale-105 transition-all">
+                  Join SOLEMATE
+                </Link>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.div>
 
       {/* Categories Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-stone-800 mb-12">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold text-center text-stone-800 mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             Shop by Category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {categories.map((category) => (
-              <div key={category.name} className="card bg-stone-50 shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+          </motion.h2>
+          
+          <motion.div 
+            className="grid grid-cols-2 md:grid-cols-4 gap-6"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ staggerChildren: 0.1 }}
+          >
+            {categories.map((category, index) => (
+              <motion.div 
+                key={category.name} 
+                className="card bg-stone-50 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                initial={{ y: 50, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1, duration: 0.6 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+              >
                 <div className="card-body items-center text-center p-6">
                   <div className="text-4xl mb-3">{category.icon}</div>
                   <h3 className="card-title text-stone-800 text-lg">{category.name}</h3>
                   <p className="text-stone-600 text-sm">{category.count}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Customer Quotes Section */}
       <section className="py-16 bg-stone-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-stone-800 mb-12">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold text-center text-stone-800 mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             What Our Customers Say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
+          </motion.h2>
+          
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ staggerChildren: 0.2 }}
+          >
             {/* Quote 1 */}
-            <div className="card bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <motion.div 
+              className="card bg-white shadow-lg hover:shadow-xl transition-shadow"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              whileHover={{ scale: 1.02, y: -3 }}
+            >
               <div className="card-body">
                 <div className="flex items-center mb-4">
                   <div className="avatar">
                     <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-12 h-12">
-                    <circle cx="50" cy="50" r="50" fill="#fef3c7" stroke="#d97706" strokeWidth="2"/>
-                    <circle cx="50" cy="35" r="15" fill="#78716c"/>
-                    <path d="M20 85 C20 70, 35 60, 50 60 S80 70, 80 85" fill="#78716c"/>
-                  </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-12 h-12">
+                        <circle cx="50" cy="50" r="50" fill="#fef3c7" stroke="#d97706" strokeWidth="2"/>
+                        <circle cx="50" cy="35" r="15" fill="#78716c"/>
+                        <path d="M20 85 C20 70, 35 60, 50 60 S80 70, 80 85" fill="#78716c"/>
+                      </svg>
                     </div>
                   </div>
                   <div className="ml-3">
@@ -135,19 +186,26 @@ const Landing = () => {
                   Verified Purchase
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Quote 2 */}
-            <div className="card bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <motion.div 
+              className="card bg-white shadow-lg hover:shadow-xl transition-shadow"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              whileHover={{ scale: 1.02, y: -3 }}
+            >
               <div className="card-body">
                 <div className="flex items-center mb-4">
                   <div className="avatar">
                     <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-12 h-12">
-                      <circle cx="50" cy="50" r="50" fill="#fef3c7" stroke="#d97706" strokeWidth="2"/>
-                      <circle cx="50" cy="35" r="15" fill="#78716c"/>
-                      <path d="M20 85 C20 70, 35 60, 50 60 S80 70, 80 85" fill="#78716c"/>
-                    </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-12 h-12">
+                        <circle cx="50" cy="50" r="50" fill="#fef3c7" stroke="#d97706" strokeWidth="2"/>
+                        <circle cx="50" cy="35" r="15" fill="#78716c"/>
+                        <path d="M20 85 C20 70, 35 60, 50 60 S80 70, 80 85" fill="#78716c"/>
+                      </svg>
                     </div>
                   </div>
                   <div className="ml-3">
@@ -168,19 +226,26 @@ const Landing = () => {
                   Verified Purchase
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Quote 3 */}
-            <div className="card bg-white shadow-lg hover:shadow-xl transition-shadow">
+            <motion.div 
+              className="card bg-white shadow-lg hover:shadow-xl transition-shadow"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              whileHover={{ scale: 1.02, y: -3 }}
+            >
               <div className="card-body">
                 <div className="flex items-center mb-4">
                   <div className="avatar">
                     <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-12 h-12">
-                      <circle cx="50" cy="50" r="50" fill="#fef3c7" stroke="#d97706" strokeWidth="2"/>
-                      <circle cx="50" cy="35" r="15" fill="#78716c"/>
-                      <path d="M20 85 C20 70, 35 60, 50 60 S80 70, 80 85" fill="#78716c"/>
-                    </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-12 h-12">
+                        <circle cx="50" cy="50" r="50" fill="#fef3c7" stroke="#d97706" strokeWidth="2"/>
+                        <circle cx="50" cy="35" r="15" fill="#78716c"/>
+                        <path d="M20 85 C20 70, 35 60, 50 60 S80 70, 80 85" fill="#78716c"/>
+                      </svg>
                     </div>
                   </div>
                   <div className="ml-3">
@@ -201,59 +266,123 @@ const Landing = () => {
                   Verified Purchase
                 </div>
               </div>
-            </div>
-
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Why Choose Us */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-stone-800 mb-12">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold text-center text-stone-800 mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             Why Choose SOLEMATE?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
+          </motion.h2>
+          
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ staggerChildren: 0.2 }}
+          >
+            <motion.div 
+              className="text-center"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.6 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+            >
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🚚</span>
               </div>
               <h3 className="text-xl font-semibold text-stone-800 mb-3">Free Shipping</h3>
               <p className="text-stone-600">Free shipping on all orders over $75. Fast and reliable delivery.</p>
-            </div>
-            <div className="text-center">
+            </motion.div>
+            
+            <motion.div 
+              className="text-center"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+            >
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">↩️</span>
               </div>
               <h3 className="text-xl font-semibold text-stone-800 mb-3">Easy Returns</h3>
               <p className="text-stone-600">30-day hassle-free returns. Your satisfaction is guaranteed.</p>
-            </div>
-            <div className="text-center">
+            </motion.div>
+            
+            <motion.div 
+              className="text-center"
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+            >
               <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">⭐</span>
               </div>
               <h3 className="text-xl font-semibold text-stone-800 mb-3">Premium Quality</h3>
               <p className="text-stone-600">Carefully curated collection of high-quality footwear brands.</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-amber-800 to-stone-900">
+      <motion.section 
+        className="py-16 bg-gradient-to-r from-amber-800 to-stone-900"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold text-white mb-6"
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
             Ready to Find Your Perfect Pair?
-          </h2>
-          <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
+          </motion.h2>
+          
+          <motion.p 
+            className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto"
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+          >
             Join thousands of satisfied customers who have found their perfect SOLEMATE.
-          </p>
-          <Link to="/register" className="btn btn-primary btn-lg bg-white text-amber-700 hover:bg-amber-700 border-white hover:text-white">
-            Get Started Today
-          </Link>
+          </motion.p>
+          
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link to="/register" className="btn btn-primary btn-lg bg-white text-amber-700 hover:bg-amber-700 border-white hover:text-white">
+              Get Started Today
+            </Link>
+          </motion.div>
         </div>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 };
 

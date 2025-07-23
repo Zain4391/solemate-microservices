@@ -11,6 +11,7 @@ import Terms from './pages/Terms';
 import Error from './components/Error';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import React from 'react';
+import { Toaster } from 'react-hot-toast';
 import DashboardLayout from './pages/DashboardLayout';
 import ResetPassword from './pages/ResetPassword';
 import ProductsPage from './pages/ProductsPage.jsx';
@@ -25,6 +26,9 @@ import { registerAction } from './actions/registerAction.js';
 /* LOADER IMPORTS */
 import { productLoader } from './loaders/productLoader.js';
 import { SingleProductLoader } from './loaders/singleProductLoader.js';
+import CartPage from './pages/CartPage.jsx';
+import CheckoutPage from './pages/CheckoutPage.jsx';
+import { StripeProvider } from './contexts/StripeContext.jsx';
 
 const router = createBrowserRouter([
   {
@@ -74,6 +78,16 @@ const router = createBrowserRouter([
         path: '/about',
         element: <AboutPage />,
         errorElement: <Error />
+      },
+      {
+        path: '/cart',
+        element: <CartPage />,
+        errorElement: <Error />
+      },
+      {
+        path: '/checkout',
+        element: <CheckoutPage />,
+        errorElement: <Error />
       }
     ]
   },
@@ -109,7 +123,62 @@ const router = createBrowserRouter([
 
 const App = () => {
   return (
-    <RouterProvider router={router} />
+    <>
+      <StripeProvider>
+      <RouterProvider router={router} />
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        gutter={8}
+        containerClassName=""
+        containerStyle={{}}
+        toastOptions={{
+          // Default options for all toasts
+          duration: 4000,
+          style: {
+            background: '#78716c', // stone-500
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '16px',
+            fontSize: '14px',
+            fontWeight: '500',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          },
+          // Success toasts - amber theme
+          success: {
+            duration: 3000,
+            style: {
+              background: '#d97706', // amber-600
+              color: '#fff',
+            },
+            iconTheme: {
+              primary: '#fff',
+              secondary: '#d97706',
+            },
+          },
+          // Error toasts - red theme  
+          error: {
+            duration: 4000,
+            style: {
+              background: '#dc2626', // red-600
+              color: '#fff',
+            },
+            iconTheme: {
+              primary: '#fff',
+              secondary: '#dc2626',
+            },
+          },
+          // Loading toasts
+          loading: {
+            style: {
+              background: '#374151', // gray-700
+              color: '#fff',
+            },
+          },
+        }}
+      />
+      </StripeProvider>
+    </>
   )
 }
 

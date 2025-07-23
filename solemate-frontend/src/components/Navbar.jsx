@@ -1,8 +1,10 @@
 // src/components/Navbar.jsx
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/slices/authSlice.js';
+import { ShoppingCart } from 'lucide-react';
+import CartBadge from './CartBadge.jsx';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +12,27 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const { totalItems } = useSelector((state) => state.cart);
+  
+  // Separate ref for ONLY the profile dropdown
+  const profileDropdownRef = useRef(null);
+
+  // Handle profile dropdown click outside
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if(profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if(isDropdownOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    }
+  },[isDropdownOpen]);
 
   const handleLogout = () => {
     setIsDropdownOpen(false);
@@ -78,19 +101,18 @@ const Navbar = () => {
 
           {/* Auth Section */}
           <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
+            <div className="ml-4 flex items-center md:ml-6 space-x-3">
+              
+              {/* Cart Badge - Handles its own click outside */}
+              <CartBadge />
+              
               {isAuthenticated ? (
-                <div className="relative">
+                <div className="relative" ref={profileDropdownRef}>
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="bg-amber-800 hover:bg-amber-900 text-white p-2 rounded-full transition-colors flex items-center space-x-2"
+                    className="bg-amber-800 hover:bg-amber-900 text-white p-2.5 rounded-full transition-colors border-2 border-amber-700 hover:border-amber-600 shadow-sm hover:shadow-md"
                   >
-                    <ProfileIcon />
-                    {user?.email && (
-                      <span className="hidden lg:block text-sm font-medium">
-                        {user.email.split('@')[0]}
-                      </span>
-                    )}
+                    <ProfileIcon className="w-5 h-5" />
                   </button>
                   
                   {/* Desktop Dropdown */}
@@ -137,23 +159,28 @@ const Navbar = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="bg-stone-200 inline-flex items-center justify-center p-2 rounded-md text-stone-700 hover:text-amber-800 hover:bg-stone-300 transition-colors"
-            >
-              <svg
-                className="h-6 w-6"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
+            <div className="flex items-center space-x-2">
+              {/* Mobile Cart Badge */}
+              <CartBadge />
+              
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="bg-stone-200 inline-flex items-center justify-center p-2 rounded-md text-stone-700 hover:text-amber-800 hover:bg-stone-300 transition-colors"
               >
-                {isOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+                <svg
+                  className="h-6 w-6"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  {isOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -203,6 +230,21 @@ const Navbar = () => {
                     onClick={() => setIsOpen(false)}
                   >
                     Dashboard
+                  </Link>
+                  <Link
+                    to="/cart"
+                    className="text-stone-700 hover:text-amber-800 px-3 py-2 rounded-md text-base font-medium border-t-2 border-transparent hover:border-amber-800 transition-all duration-200 flex items-center justify-between"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <div className="flex items-center">
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Cart
+                    </div>
+                    {totalItems > 0 && (
+                      <span className="bg-amber-600 text-white text-xs px-2 py-1 rounded-full min-w-[20px] flex items-center justify-center">
+                        {totalItems > 99 ? '99+' : totalItems}
+                      </span>
+                    )}
                   </Link>
                   <button
                     onClick={handleLogout}

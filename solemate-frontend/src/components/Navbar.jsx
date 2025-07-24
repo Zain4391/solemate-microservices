@@ -1,12 +1,13 @@
 // src/components/Navbar.jsx
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../store/slices/authSlice.js';
 import { ShoppingCart } from 'lucide-react';
 import CartBadge from './CartBadge.jsx';
 
 const Navbar = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -16,6 +17,29 @@ const Navbar = () => {
   
   // Separate ref for ONLY the profile dropdown
   const profileDropdownRef = useRef(null);
+
+  // helper to get location for focus effect
+  const isActiveLink = (path) => {
+    if(path === '/' && location.pathname === '/') {
+      return true;
+    }
+    if(path !== '/' && location.pathname.startsWith(path)) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+    const getLinkClass = (path) => {
+      const baseClass = "px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 border-t-2";
+      
+      if (isActiveLink(path)) {
+          return `${baseClass} text-amber-800 border-amber-800`;
+      }
+      
+      return `${baseClass} text-stone-700 border-transparent hover:text-amber-800 hover:border-amber-800`;
+  };
 
   // Handle profile dropdown click outside
   useEffect(() => {
@@ -80,22 +104,39 @@ const Navbar = () => {
             <div className="ml-10 flex items-baseline space-x-4">
               <Link 
                 to="/" 
-                className="text-stone-700 hover:text-amber-800 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 border-t-2 border-transparent hover:border-amber-800"
+                className={getLinkClass('/')}
               >
                 Home
               </Link>
               <Link 
                 to="/about" 
-                className="text-stone-700 hover:text-amber-800 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 border-t-2 border-transparent hover:border-amber-800"
-              >
+                className={getLinkClass('/about')}
+                >
                 About
               </Link>
               <Link 
                 to="/products" 
-                className="text-stone-700 hover:text-amber-800 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 border-t-2 border-transparent hover:border-amber-800"
-              >
+                className={getLinkClass('/products')}
+                >
                 Products
               </Link>
+              {isAuthenticated && (
+                <>
+                  <Link 
+                  to="/cart" 
+                  className={getLinkClass('/cart')}
+                  > 
+                    Cart
+                  </Link>
+
+                  <Link
+                  to="/orders"
+                  className={getLinkClass('/orders')}
+                  >
+                    My Orders
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -214,6 +255,13 @@ const Navbar = () => {
             {/* Mobile Auth Section */}
             {isAuthenticated ? (
               <>
+                <Link
+                to="/orders"
+                className="text-stone-700 hover:text-amber-800 block px-3 py-2 rounded-md text-base font-medium border-t-2 border-transparent hover:border-amber-800 transition-all duration-200"
+                onClick={() => setIsOpen(false)}
+                >
+                  My Orders
+                </Link>
                 <div className="border-t border-stone-300 pt-3 mt-3">
                   <div className="px-3 py-2 text-xs text-stone-500">
                     {user?.email || 'User'}

@@ -1,68 +1,32 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect } from 'react';
+import { Form, useActionData, useLoaderData, useNavigation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
 import { Package } from 'lucide-react';
 import { orderApiService } from '../services/orderapi.js';
-import { fetchItemsFromCart} from '../store/slices/cartSlice.js'
 import OrderItemCard from '../components/OrderItemCard.jsx';
 import OrderTotals from '../components/OrderTotals.jsx';
 
 const CheckoutPage = () => {
-    const { items, totalAmount, totalItems } = useSelector(state => state.cart);
-    const { user } = useSelector(state => state.auth);
-    const dispatch = useDispatch();
+    const { items, totalAmount, totalItems, isLoading } = useSelector(state => state.cart);
+    const { user } = useLoaderData()
+    const actionData = useActionData();
+    const navigation = useNavigation();
 
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [orderError, setOrderError] = useState(null);
-
-    const { register, handleSubmit, formState: { errors, isValid } } = useForm({
-        mode: 'onChange'
-    });
+    const isSUbmitting = navigation.state === "submitting";
 
     const subtotal = totalAmount;
     const tax = subtotal * 0.08;
     const shipping = subtotal > 100 ? 0 : 10;
     const grandTotal = subtotal + tax + shipping;
 
-    const onSubmit = async (formData) => {
-        setIsProcessing(true);
-        setOrderError(null);
-
-        try {
-            console.log('Creating Order with: ', formData);
-
-            const orderData = {
-                userId: user.userId,
-                address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}`,
-                totalAmount: parseInt(Math.ceil(grandTotal)),
-                promiseDate: formData.promiseDate
-            };
-
-            console.log('Sending Data: ', orderData);
-            
-
-            const orderResponse = await orderApiService.createOrder(orderData);
-            console.log('Order created', orderResponse.data);
-
-            const moveToCart = {
-                userId: user.userId,
-                orderId: orderResponse.data.orderId
-            }
-
-            await orderApiService.moveCartToOrderDetails(moveToCart);
-
-            dispatch(fetchItemsFromCart(user.userId));
-            console.log("Cart Moved successfully");
-        
-        } catch (error) {
-            console.error('Checkout failed:', error);
-            setOrderError(error.response?.data?.message || 'Failed to create order');
-        } finally {
-            setIsProcessing(false);
-        }
+    if (isLoading && items.length === 0) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-amber-600"></div>
+            </div>
+        );
     }
-
 
   return (
     <div className="min-h-screen bg-stone-50 py-8">
@@ -107,7 +71,9 @@ const CheckoutPage = () => {
                             <h2 className="text-xl font-semibold text-stone-800 mb-6">Shipping Information</h2>
                             
                             {/* Replace "Form will go here" with this: */}
-                            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                            <Form method='post' className="space-y-4">
+
+                                <input type='hidden' name='totalAmount' value={Math.ceil(grandTotal)}/>
                                 
                                 {/* Street Address */}
                                 <div>
@@ -115,16 +81,12 @@ const CheckoutPage = () => {
                                         Street Address *
                                     </label>
                                     <input
-                                        {...register('address', { 
-                                            required: 'Address is required',
-                                            minLength: { value: 5, message: 'Address must be at least 5 characters' }
-                                        })}
+                                        name='address'
+                                        required
+                                        minLength={5}
                                         className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors text-stone-800"
                                         placeholder="123 Main Street"
                                     />
-                                    {errors.address && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
-                                    )}
                                 </div>
                                 
                                 {/* City and State */}
@@ -134,16 +96,12 @@ const CheckoutPage = () => {
                                             City *
                                         </label>
                                         <input
-                                            {...register('city', { 
-                                                required: 'City is required',
-                                                minLength: { value: 2, message: 'City name too short' }
-                                            })}
+                                            name='city'
+                                            required
+                                            minLength={2}
                                             className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors text-stone-800"
                                             placeholder="City"
                                         />
-                                        {errors.city && (
-                                            <p className="text-red-500 text-sm mt-1">{errors.city.message}</p>
-                                        )}
                                     </div>
                                     
                                     <div>
@@ -151,16 +109,12 @@ const CheckoutPage = () => {
                                             State *
                                         </label>
                                         <input
-                                            {...register('state', { 
-                                                required: 'State is required',
-                                                minLength: { value: 2, message: 'State is required' }
-                                            })}
+                                            name='state'
+                                            required
+                                            minLength={2}
                                             className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors text-stone-800"
                                             placeholder="State"
                                         />
-                                        {errors.state && (
-                                            <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>
-                                        )}
                                     </div>
                                 </div>
                                 
@@ -171,19 +125,12 @@ const CheckoutPage = () => {
                                             ZIP Code *
                                         </label>
                                         <input
-                                            {...register('zipCode', { 
-                                                required: 'ZIP code is required',
-                                                pattern: { 
-                                                    value: /^\d{5}(-\d{4})?$/, 
-                                                    message: 'Invalid ZIP code format' 
-                                                }
-                                            })}
+                                            name='zipCode'
+                                            required
+                                            pattern='\d{5}'
                                             className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors text-stone-800"
                                             placeholder="12345"
                                         />
-                                        {errors.zipCode && (
-                                            <p className="text-red-500 text-sm mt-1">{errors.zipCode.message}</p>
-                                        )}
                                     </div>
                                     
                                     <div>
@@ -191,19 +138,12 @@ const CheckoutPage = () => {
                                             Phone *
                                         </label>
                                         <input
-                                            {...register('phone', { 
-                                                required: 'Phone number is required',
-                                                pattern: { 
-                                                    value: /^\(\d{3}\) \d{3}-\d{4}$|^\d{10}$|^\d{3}-\d{3}-\d{4}$/, 
-                                                    message: 'Invalid phone number' 
-                                                }
-                                            })}
+                                            name='phone'
+                                            required
+                                            pattern='/^\(\d{3}\) \d{3}-\d{4}$|^\d{10}$|^\d{3}-\d{3}-\d{4}$/'
                                             className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors text-stone-800"
                                             placeholder="(555) 123-4567"
                                         />
-                                        {errors.phone && (
-                                            <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
-                                        )}
                                     </div>
                                 </div>
                                 
@@ -214,47 +154,37 @@ const CheckoutPage = () => {
                                     </label>
                                     <input
                                         type="date"
-                                        {...register('promiseDate', { 
-                                            required: 'Delivery date is required',
-                                            validate: (value) => {
-                                                const selectedDate = new Date(value);
-                                                const today = new Date();
-                                                today.setHours(0, 0, 0, 0);
-                                                return selectedDate >= today || 'Date cannot be in the past';
-                                            }
-                                        })}
+                                        name='promiseDate'
+                                        required
                                         min={new Date().toISOString().split('T')[0]}
                                         className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors text-stone-800"
                                     />
-                                    {errors.promiseDate && (
-                                        <p className="text-red-500 text-sm mt-1">{errors.promiseDate.message}</p>
-                                    )}
                                 </div>
                                 
                                 {/* Error Display */}
-                                {orderError && (
+                                {actionData?.error && (
                                     <motion.div 
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         className="p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm"
                                     >
-                                        {orderError}
+                                        {actionData.error}
                                     </motion.div>
                                 )}
                                 
                                 {/* Submit Button */}
                                 <motion.button
                                     type="submit"
-                                    disabled={!isValid || isProcessing || items.length === 0}
-                                    whileHover={{ scale: isValid && !isProcessing ? 1.02 : 1 }}
-                                    whileTap={{ scale: isValid && !isProcessing ? 0.98 : 1 }}
+                                    disabled={isSUbmitting || items.length === 0}
+                                    whileHover={{ scale: !isSUbmitting && items.length > 0 ? 1.02 : 1 }}
+                                    whileTap={{ scale: !isSUbmitting && items.length > 0 ? 0.98 : 1 }}
                                     className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
-                                        !isValid || isProcessing || items.length === 0
+                                        isSUbmitting || items.length === 0
                                             ? 'bg-stone-300 text-stone-500 cursor-not-allowed'
                                             : 'bg-amber-600 text-white hover:bg-amber-700 shadow-lg hover:shadow-xl'
                                     }`}
                                 >
-                                    {isProcessing ? (
+                                    {isSUbmitting ? (
                                         <div className="flex items-center justify-center">
                                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                                             Processing Order...
@@ -264,7 +194,7 @@ const CheckoutPage = () => {
                                     )}
                                 </motion.button>
                                 
-                            </form>
+                            </Form>
                             
                         </div>
                     </div>

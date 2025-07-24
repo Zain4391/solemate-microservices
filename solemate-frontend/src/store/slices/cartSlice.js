@@ -49,6 +49,8 @@ export const updateCart = createAsyncThunk("cart/updateItem",
     async ({cartId, updateData, userId}, { rejectWithValue, dispatch }) => {
         try {
             console.log('🔍 API call - updating cartId:', cartId);
+            console.log("\n With update data: ", updateData);
+            
             const response = await cartApi.updateCart(cartId, updateData);
             console.log('🔍 API call - returned:', response);
             // After updating, refetch the cart to get updated data

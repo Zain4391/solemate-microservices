@@ -22,13 +22,72 @@ const OrderItemCard = ({ item, index = 0 }) => {
                delay: index * 0.1,
                ease: "easeOut" 
            }}
-           className="rounded-xl border border-stone-200 bg-white p-6 hover:shadow-lg transition-all"
+           className="rounded-xl border border-stone-200 bg-white p-4 sm:p-6 hover:shadow-lg transition-all"
            whileHover={{ 
                scale: 1.01,
                transition: { duration: 0.2 }
            }}
        >
-           <div className="flex items-center space-x-4">
+           {/* Mobile Layout (sm and below) */}
+           <div className="flex flex-col sm:hidden space-y-3">
+               {/* Top Row - Image and Product Info */}
+               <div className="flex items-start space-x-3">
+                   {/* Product Image */}
+                   <motion.div 
+                       className="flex-shrink-0"
+                       initial={{ opacity: 0, scale: 0.8 }}
+                       animate={{ opacity: 1, scale: 1 }}
+                       transition={{ delay: 0.2 + index * 0.1 }}
+                   >
+                       {image ? (
+                           <img 
+                               src={image} 
+                               alt={productName}
+                               className='w-16 h-16 object-cover rounded-lg border border-stone-200'
+                           />
+                       ) : (
+                           <div className="w-16 h-16 bg-stone-100 rounded-lg border border-stone-200 flex items-center justify-center">
+                               <Package className="w-6 h-6 text-stone-400" />
+                           </div>
+                       )}
+                   </motion.div>
+
+                   {/* Product Details */}
+                   <motion.div 
+                       className="flex-1 min-w-0"
+                       initial={{ opacity: 0, x: -20 }}
+                       animate={{ opacity: 1, x: 0 }}
+                       transition={{ delay: 0.3 + index * 0.1, duration: 0.4 }}
+                   >
+                       <h3 className='font-semibold text-stone-800 text-base mb-1 truncate'>
+                           {productName}
+                       </h3>
+                       <div className="flex flex-col space-y-1 text-sm text-stone-600">
+                           <span>Size: {size || 'N/A'}</span>
+                           <span>Qty: {quantity}</span>
+                           <span>${price.toFixed(2)} each</span>
+                       </div>
+                   </motion.div>
+               </div>
+
+               {/* Bottom Row - Item Total */}
+               <motion.div 
+                   className="text-right border-t border-stone-100 pt-3"
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   transition={{ delay: 0.4 + index * 0.1, duration: 0.4 }}
+               >
+                   <div className="font-semibold text-lg text-stone-800">
+                       ${itemTotal}
+                   </div>
+                   <div className="text-sm text-stone-500">
+                       ${price.toFixed(2)} × {quantity}
+                   </div>
+               </motion.div>
+           </div>
+
+           {/* Desktop Layout (sm and above) - Original Layout */}
+           <div className="hidden sm:flex items-center space-x-4">
                
                {/* Product Image */}
                <motion.div 

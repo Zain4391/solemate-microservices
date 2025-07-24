@@ -5,7 +5,7 @@ Follows the same pattern as cartApi
 
 import axios from "axios"
 
-const PAYMENT_BASE_URL = "http://localhost:3003/api/payment"
+const PAYMENT_BASE_URL = "http://localhost:3004/api/payments"
 
 export const paymentApi = axios.create({
     baseURL: PAYMENT_BASE_URL,
@@ -42,5 +42,6 @@ export const paymentApiService = {
     createPayment: (paymentData) => paymentApi.post('/create-payment', paymentData),
     confirmPayment: (confirmData) => paymentApi.post('/confirm-payment', confirmData),
     getPaymentStatus: (paymentId) => paymentApi.get(`/payment-status/${paymentId}`),
+    getPaymentsByOrderId: (orderId) => paymentApi.get(`/order/${orderId}`),
     mockConfirmPayment: (paymentId) => paymentApi.post(`/mock-confirm-payment/${paymentId}`)
 };

@@ -11,6 +11,9 @@ export const checkoutLoader = async () => {
 
         return { user };
     } catch (error) {
-        throw new Error(`Error fetching details: ${error}`);
+        console.error('Checkout failed:', error);
+        return {
+            error: error.response?.data?.message || 'Failed to process user: from checkout loader'
+        };
     }
 };

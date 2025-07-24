@@ -11,7 +11,7 @@ export const loginAction = async ({ request }) => {
       const result = await store.dispatch(loginUser({ email, password }));
 
       if(loginUser.fulfilled.match(result)) {
-        return redirect('/dashboard');
+        return redirect('/dashboard/profile');
       }
       else {
         return {

@@ -22,16 +22,16 @@ const Footer = () => {
                 About Us
               </Link>
               <Link 
-                to="/faqs" 
+                to="/terms" 
                 className="block text-stone-300 hover:text-amber-200 transition-colors"
               >
-                FAQs
+                Terms & Service
               </Link>
               <Link 
-                to="/values" 
+                to="/Privacy" 
                 className="block text-stone-300 hover:text-amber-200 transition-colors"
               >
-                Our Values
+                Our Privacy Policy
               </Link>
             </div>
           </div>

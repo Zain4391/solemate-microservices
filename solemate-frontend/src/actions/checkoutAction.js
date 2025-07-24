@@ -2,6 +2,8 @@
 import { redirect } from 'react-router-dom';
 import { orderApiService } from '../services/orderapi';
 import { paymentApiService } from '../services/paymentapi';
+import { store } from '../store/index.js';
+import { fetchItemsFromCart } from '../store/slices/cartSlice.js';
 
 export const checkoutAction = async ({ request }) => {
     const formData = await request.formData();
@@ -31,11 +33,14 @@ export const checkoutAction = async ({ request }) => {
             payment_amount: orderData.totalAmount,
             currency: 'usd'
         });
-        
-        // Redirect to payment page
-        return redirect(`/payment/${orderResponse.data.orderId}?client_secret=${paymentResponse.data.data.client_secret}&payment_id=${paymentResponse.data.data.payment_id}`);
+
+        await store.dispatch(fetchItemsFromCart(user.userId));
+
+        const { client_secret, payment_id } = paymentResponse.data.data;
+        return redirect(`/payment/${orderResponse.data.orderId}?client_secret=${client_secret}&payment_id=${payment_id}&amount=${orderData.totalAmount}`);
         
     } catch (error) {
+        console.error('Checkout failed:', error);
         return {
             error: error.response?.data?.message || 'Failed to process checkout'
         };

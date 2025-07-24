@@ -21,14 +21,22 @@ import AboutPage from './pages/AboutPage.jsx';
 /* ACTION IMPORTS */
 import { loginAction } from './actions/loginAction.js';
 import { registerAction } from './actions/registerAction.js';
-
+import { checkoutAction } from './actions/checkoutAction.js';
 
 /* LOADER IMPORTS */
 import { productLoader } from './loaders/productLoader.js';
 import { SingleProductLoader } from './loaders/singleProductLoader.js';
+import { checkoutLoader } from './loaders/checkoutLoader.js';
+
 import CartPage from './pages/CartPage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
 import { StripeProvider } from './contexts/StripeContext.jsx';
+import PaymentPage from './pages/PaymentPage.jsx';
+import { paymentAction } from './actions/paymentAction.js';
+import PaymentSuccessPage from './pages/PaymentSuccessPage.jsx';
+import OrdersPage from './pages/OrderPage.jsx';
+import { ordersLoader } from './loaders/ordersLoader.js';
+import { profileLoader } from './loaders/profileLoader.js';
 
 const router = createBrowserRouter([
   {
@@ -51,16 +59,17 @@ const router = createBrowserRouter([
             errorElement: <Error />
           },
           {
-            path: 'profile',
-            element: <Profile />,
-            errorElement: <Error />
-          },
-          {
             path: 'admin',
             element: <AdminPanel />,
             errorElement: <Error />
           }
         ]
+      },
+      {
+        path: '/dashboard/profile',
+        element: <Profile />,
+        errorElement: <Error />,
+        loader: profileLoader
       },
       {
         path:'/products',
@@ -87,7 +96,23 @@ const router = createBrowserRouter([
       {
         path: '/checkout',
         element: <CheckoutPage />,
-        errorElement: <Error />
+        errorElement: <Error />,
+        action: checkoutAction,
+        loader: checkoutLoader
+      },
+      {
+        path: '/payment/:orderId',
+        element: <PaymentPage />,
+        action: paymentAction
+      },
+      {
+        path: '/payment-success/:orderId',
+        element: <PaymentSuccessPage />
+      },
+      {
+        path: '/orders',
+        element: <OrdersPage />,
+        loader: ordersLoader
       }
     ]
   },

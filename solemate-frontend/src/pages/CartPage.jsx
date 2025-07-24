@@ -6,11 +6,13 @@ import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CartItemCard from '../components/CartItemCard';
 import { updateCart, removeItemFromCart, fetchItemsFromCart } from '../store/slices/cartSlice.js';
+import { productApi } from '../services/productapi.js';
 
 const CartPage = () => {
   const { items, totalItems, totalAmount, isLoading } = useSelector(state => state.cart);
   const { isAuthenticated, user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+  const [updateError, setUpdateError] = useState(null);
   
   // Batch update state
   const [pendingChanges, setPendingChanges] = useState({});
@@ -29,6 +31,7 @@ const CartPage = () => {
 
   // Handle quantity changes (local state only)
   const handleQuantityChange = (cartId, newQuantity) => {
+    setUpdateError(null);
     setPendingChanges(prev => ({
       ...prev,
       [cartId]: { quantity: newQuantity, remove: false }
@@ -37,6 +40,7 @@ const CartPage = () => {
 
   // Handle item removal (local state only)
   const handleRemove = (cartId) => {
+    setUpdateError(null);
     setPendingChanges(prev => ({
       ...prev,
       [cartId]: { remove: true }
@@ -65,37 +69,61 @@ const CartPage = () => {
   // Batch update function
   const handleUpdateCart = async () => {
     setIsUpdating(true);
+    setUpdateError(null); // Clear any previous errors
     
     try {
-      // Process all pending changes
+      // Step 1: Validate stock for all pending changes
+      for (const [cartId, change] of Object.entries(pendingChanges)) {
+        if (!change.remove) {
+          const cartItem = items.find(item => item.cart_id === cartId);
+          
+          // Fetch current product stock
+          const productResponse = await productApi.getProductById(cartItem.product_p_id);
+          const product = productResponse.data.data.product[0]; // Based on your response structure
+          
+          // Find the size stock info
+          const sizeInfo = product.P_Size.find(s => s.size == cartItem.size);
+          
+          if (!sizeInfo) {
+            throw new Error(`Size ${cartItem.size} is no longer available`);
+          }
+          
+          if (change.quantity > sizeInfo.stock) {
+            throw new Error(`Only ${sizeInfo.stock} items available for size ${cartItem.size}. You're trying to add ${change.quantity}.`);
+          }
+        }
+      }
+      
+      // Step 2: If validation passes, proceed with updates
       const promises = Object.entries(pendingChanges).map(([cartId, change]) => {
         if (change.remove) {
-          // Dispatch remove action
           return dispatch(removeItemFromCart({ 
             cartId, 
             userId: user.u_id 
           })).unwrap();
         } else {
-          // Dispatch update action
+          const originalItem = items.find(item => item.cart_id === cartId);
           return dispatch(updateCart({ 
             cartId, 
-            updateData: { quantity: change.quantity },
+            updateData: { 
+              quantity: change.quantity, 
+              size: originalItem.size
+            },
             userId: user.u_id 
           })).unwrap();
         }
       });
-
-      // Wait for all updates to complete
+  
       await Promise.all(promises);
-
       await dispatch(fetchItemsFromCart(user.userId));
       
-      // Clear pending changes
+      // Clear pending changes only on success
       setPendingChanges({});
       
     } catch (error) {
       console.error('Error updating cart:', error);
-      // You could show a toast notification here
+      setUpdateError(error.message); // Show user-friendly error
+      // Don't clear pending changes so user can see what failed
     } finally {
       setIsUpdating(false);
     }
@@ -122,16 +150,16 @@ const CartPage = () => {
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Page Container */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         
         {/* Page Header */}
         <motion.div 
-          className="mb-8"
+          className="mb-6 sm:mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl font-bold text-stone-800">Shopping Cart</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-stone-800">Shopping Cart</h1>
           <p className="text-stone-600 mt-2">
             {displayTotals.newTotalItems} items in your cart
             {hasChanges && (
@@ -143,17 +171,17 @@ const CartPage = () => {
         </motion.div>
 
         {/* Main Grid - Two columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           
           {/* Left Column - Cart Items */}
           <div className="lg:col-span-2">
             <motion.div 
-              className="bg-white rounded-xl shadow-sm border border-stone-200 p-6"
+              className="bg-white rounded-xl shadow-sm border border-stone-200 p-4 sm:p-6"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <h2 className="text-xl font-semibold text-stone-800 mb-4">Your Items</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-stone-800 mb-4">Your Items</h2>
               
               <div className="space-y-4">
                 {items.length > 0 ? (
@@ -170,13 +198,13 @@ const CartPage = () => {
                   ))
                 ) : (
                   <motion.div 
-                    className="text-center py-12"
+                    className="text-center py-8 sm:py-12"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
                   >
-                    <ShoppingCart className="w-16 h-16 text-stone-300 mx-auto mb-4" />
-                    <p className="text-stone-500 text-lg">Your cart is empty</p>
+                    <ShoppingCart className="w-12 h-12 sm:w-16 sm:h-16 text-stone-300 mx-auto mb-4" />
+                    <p className="text-stone-500 text-base sm:text-lg">Your cart is empty</p>
                     <Link 
                       to="/products" 
                       className="text-amber-600 hover:text-amber-700 font-medium mt-2 inline-block"
@@ -187,6 +215,22 @@ const CartPage = () => {
                 )}
               </div>
             </motion.div>
+
+            {updateError && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4 p-3 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm"
+              >
+                <strong>Update Failed:</strong> {updateError}
+                <button 
+                  onClick={() => setUpdateError(null)}
+                  className="ml-2 text-red-600 hover:text-red-800 font-medium"
+                >
+                  ✕
+                </button>
+              </motion.div>
+            )}
 
             {/* Update Cart Button - Only shown when there are changes */}
             <AnimatePresence>
@@ -199,7 +243,7 @@ const CartPage = () => {
                   className="mt-6"
                 >
                   <div className="bg-white border border-amber-200 rounded-xl p-4 shadow-lg">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                       <div className="flex items-center space-x-4">
                         <ShoppingCart className="w-5 h-5 text-amber-600" />
                         <div>
@@ -250,14 +294,14 @@ const CartPage = () => {
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 order-first lg:order-last">
             <motion.div 
-              className="bg-white rounded-xl shadow-sm border border-stone-200 p-6 sticky top-8"
+              className="bg-white rounded-xl shadow-sm border border-stone-200 p-4 sm:p-6 lg:sticky lg:top-8"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <h2 className="text-xl font-semibold text-stone-800 mb-4">Order Summary</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-stone-800 mb-4">Order Summary</h2>
               
               <div className="space-y-3">
                 <div className="flex justify-between">
@@ -308,24 +352,35 @@ const CartPage = () => {
                   </motion.p>
                 )}
 
-                <Link 
-                  to="/checkout"
-                  className={`w-full px-2 py-3 rounded-lg font-medium transition-colors mt-6 flex items-center justify-center space-x-2 ${
-                    hasChanges 
-                      ? 'bg-stone-300 text-stone-500 cursor-not-allowed' 
-                      : 'bg-amber-600 hover:bg-amber-700 text-white'
-                  }`}
-                  onClick={(e) => hasChanges && e.preventDefault()}
-                >
-                  {hasChanges ? (
-                    <span>Update Cart First</span>
-                  ) : (
-                    <>
-                      <span>Proceed to Checkout</span>
-                      <ArrowRight className='w-4 h-4 ml-2'/>
-                    </>
-                  )}
-                </Link>
+                {(() => {
+                  const isCartEmpty = items.length === 0;
+                  const isDisabled = hasChanges || isCartEmpty;
+                  
+                  const getButtonText = () => {
+                    if (hasChanges) return "Update Cart First";
+                    if (isCartEmpty) return "Cart is Empty";
+                    return (
+                      <>
+                        <span>Proceed to Checkout</span>
+                        <ArrowRight className='w-4 h-4 ml-2'/>
+                      </>
+                    );
+                  };
+                  
+                  return (
+                    <Link 
+                      to="/checkout"
+                      className={`w-full px-2 py-3 rounded-lg font-medium transition-colors mt-6 flex items-center justify-center space-x-2 ${
+                        isDisabled
+                          ? 'bg-stone-300 text-stone-500 cursor-not-allowed' 
+                          : 'bg-amber-600 hover:bg-amber-700 text-white'
+                      }`}
+                      onClick={(e) => isDisabled && e.preventDefault()}
+                    >
+                      {getButtonText()}
+                    </Link>
+                  );
+                })()}
               </div>
             </motion.div>
           </div>

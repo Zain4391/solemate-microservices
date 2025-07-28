@@ -48,5 +48,9 @@ export const orderApiService = {
     updateOrderStatus: (orderId, statusData) => orderApi.put(`/${orderId}/status`, statusData),
     updateOrderAddress: (orderId, addressData) => orderApi.put(`/${orderId}/address`, addressData),
     updatePromiseDate: (orderId, dateData) => orderApi.put(`/${orderId}/promise-date`, dateData),
-    deleteOrder: (orderId) => orderApi.delete(`/${orderId}`)
+    deleteOrder: (orderId) => orderApi.delete(`/${orderId}`),
+
+    // admin related
+    getAllOrders: () => orderApi.get('/'),
+    getORderByStatus: (isComplete) => orderApi.get(`/status/${isComplete}`)
 }

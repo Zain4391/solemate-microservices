@@ -5,7 +5,6 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
-import AdminPanel from './pages/AdminPanel';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Error from './components/Error';
@@ -18,12 +17,9 @@ import ProductsPage from './pages/ProductsPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 
-/* ACTION IMPORTS */
 import { loginAction } from './actions/loginAction.js';
 import { registerAction } from './actions/registerAction.js';
 import { checkoutAction } from './actions/checkoutAction.js';
-
-/* LOADER IMPORTS */
 import { productLoader } from './loaders/productLoader.js';
 import { SingleProductLoader } from './loaders/singleProductLoader.js';
 import { checkoutLoader } from './loaders/checkoutLoader.js';
@@ -37,6 +33,16 @@ import PaymentSuccessPage from './pages/PaymentSuccessPage.jsx';
 import OrdersPage from './pages/OrderPage.jsx';
 import { ordersLoader } from './loaders/ordersLoader.js';
 import { profileLoader } from './loaders/profileLoader.js';
+import AdminLayout from './components/AdminLayout.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+import { adminLoader } from './loaders/adminLoader.js';
+import AdminOrders from './pages/AdminOrders.jsx';
+import { adminOrdersLoader } from './loaders/adminOrderLoader.js';
+import AdminOrderDetails from './pages/AdminOrderDetails.jsx';
+import { adminOrderDetailsLoader } from './loaders/adminOrderDetailsLoader.js';
+import { adminOrderStatusAction } from './actions/adminOrderDetailsAction.js';
+import AdminProducts from './pages/AdminProducts.jsx';
+import { adminProductsLoader } from './loaders/adminProductsLoader.js';
 
 const router = createBrowserRouter([
   {
@@ -58,11 +64,6 @@ const router = createBrowserRouter([
             element: <Dashboard />,
             errorElement: <Error />
           },
-          {
-            path: 'admin',
-            element: <AdminPanel />,
-            errorElement: <Error />
-          }
         ]
       },
       {
@@ -142,6 +143,38 @@ const router = createBrowserRouter([
     path: '/terms',
     element: <Terms />,
     errorElement: <Error />
+  },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    errorElement: <Error />,
+    children: [
+      {
+        index: true,
+        element: <AdminDashboard />,
+        loader: adminLoader,
+        errorElement: <Error />
+      },
+      {
+        path:'orders',
+        element: <AdminOrders />,
+        loader: adminOrdersLoader,
+        errorElement: <Error />
+      },
+      {
+        path:"orders/:orderId",
+        element: <AdminOrderDetails />,
+        loader:adminOrderDetailsLoader,
+        action: adminOrderStatusAction,
+        errorElement: <Error />
+      },
+      {
+        path: "products",
+        element: <AdminProducts />,
+        loader: adminProductsLoader,
+        errorElement: <Error />
+      }
+    ]
   },
   
 ]);

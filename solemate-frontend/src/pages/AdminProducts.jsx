@@ -1,59 +1,31 @@
 import React, { useState } from 'react';
-import { useLoaderData, useSearchParams, Link } from 'react-router-dom';
+import { useLoaderData, useSearchParams, Link, useFetcher } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Search, 
-  Filter, 
+  Search,
   Plus, 
   Edit, 
-  Trash2, 
-  Eye,
+  Trash2,
   Package,
-  Image as ImageIcon,
-  DollarSign
+  Image as ImageIcon
 } from 'lucide-react';
 
 const AdminProducts = () => {
   const { products = [], pagination, categories = [], brands = [], filters, stats } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedProducts, setSelectedProducts] = useState([]);
+  const fetcher = useFetcher();
+  const [deletingProduct, setDeletingProduct] = useState(null);
 
-  // Ensure products is always an array
+  // Ensure arrays are safe
   const safeProducts = Array.isArray(products) ? products : [];
-  const safeCategories = Array.isArray(categories) ? categories : [];
-  const safeBrands = Array.isArray(brands) ? brands : [];
 
   const handleSearch = (e) => {
     const search = e.target.value;
     const newParams = new URLSearchParams(searchParams);
-    if (search) {
+    if (search.trim()) {
       newParams.set('search', search);
     } else {
       newParams.delete('search');
-    }
-    newParams.set('page', '1'); // Reset to first page
-    setSearchParams(newParams);
-  };
-
-  const handleCategoryFilter = (e) => {
-    const category = e.target.value;
-    const newParams = new URLSearchParams(searchParams);
-    if (category) {
-      newParams.set('category', category);
-    } else {
-      newParams.delete('category');
-    }
-    newParams.set('page', '1');
-    setSearchParams(newParams);
-  };
-
-  const handleBrandFilter = (e) => {
-    const brand = e.target.value;
-    const newParams = new URLSearchParams(searchParams);
-    if (brand) {
-      newParams.set('brand', brand);
-    } else {
-      newParams.delete('brand');
     }
     newParams.set('page', '1');
     setSearchParams(newParams);
@@ -65,9 +37,29 @@ const AdminProducts = () => {
     setSearchParams(newParams);
   };
 
-  const clearFilters = () => {
+  const clearSearch = () => {
     setSearchParams({});
   };
+
+  const handleDelete = (productId, productName) => {
+    if (window.confirm(`Are you sure you want to delete "${productName}"? This action cannot be undone.`)) {
+      setDeletingProduct(productId);
+      fetcher.submit(
+        { productId }, 
+        { 
+          method: 'delete',
+          action: '/admin/products'
+        }
+      );
+    }
+  };
+
+  // Reset deleting state when fetcher is done
+  React.useEffect(() => {
+    if (fetcher.state === 'idle' && deletingProduct) {
+      setDeletingProduct(null);
+    }
+  }, [fetcher.state, deletingProduct]);
 
   const getStockStatus = (product) => {
     const totalStock = product.stock || 0;
@@ -88,10 +80,6 @@ const AdminProducts = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
   };
-
-  const uniqueCategoryOptions = Array.from(
-    new Map(categories.map(cat => [cat.c_name, cat])).values()
-  );
 
   return (
     <motion.div
@@ -137,58 +125,52 @@ const AdminProducts = () => {
         </div>
       </motion.div>
 
-      {/* Filters and Search */}
+      {/* Search Section */}
       <motion.div variants={itemVariants} className="bg-white p-6 rounded-lg shadow-sm border border-stone-200">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="flex gap-4 max-w-md">
           {/* Search */}
-          <div className="relative">
+          <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-stone-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search products..."
               defaultValue={filters?.search || ''}
               onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 border text-stone-500 border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              className="w-full pl-10 pr-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-stone-900 placeholder:text-stone-500"
             />
           </div>
 
-          {/* Category Filter */}
-          <select
-            value={filters?.category || ''}
-            onChange={handleCategoryFilter}
-            className="px-3 py-2 border text-stone-500 border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-          >
-            <option value="">All Categories</option>
-            {uniqueCategoryOptions.map((category) => (
-              <option key={category.c_id} value={category.c_id}>
-                {category.c_name}
-              </option>
-            ))}
-          </select>
-
-          {/* Brand Filter */}
-          <select
-            value={filters?.brand || ''}
-            onChange={handleBrandFilter}
-            className="px-3 py-2 border text-stone-500 border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-          >
-            <option value="">All Brands</option>
-            {safeBrands.map((brand) => (
-              <option key={brand} value={brand}>
-                {brand}
-              </option>
-            ))}
-          </select>
-
-          {/* Clear Filters */}
-          <button
-            onClick={clearFilters}
-            className="px-4 py-2 text-stone-600 hover:text-stone-900 border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
-          >
-            Clear Filters
-          </button>
+          {/* Clear Search */}
+          {filters?.search && (
+            <button
+              onClick={clearSearch}
+              className="px-4 py-2 text-stone-700 hover:text-stone-900 border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors bg-white"
+            >
+              Clear
+            </button>
+          )}
         </div>
       </motion.div>
+
+      {/* Error Message */}
+      {fetcher.data?.error && (
+        <motion.div 
+          variants={itemVariants}
+          className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"
+        >
+          {fetcher.data.error}
+        </motion.div>
+      )}
+
+      {/* Success Message */}
+      {fetcher.data?.success && (
+        <motion.div 
+          variants={itemVariants}
+          className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg"
+        >
+          Product deleted successfully!
+        </motion.div>
+      )}
 
       {/* Products Grid */}
       <motion.div variants={itemVariants} className="bg-white rounded-lg shadow-sm border border-stone-200">
@@ -196,11 +178,16 @@ const AdminProducts = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
             {safeProducts.map((product, index) => {
               const stockStatus = getStockStatus(product);
+              const isDeleting = deletingProduct === product.p_id || fetcher.state === 'submitting';
+              
               return (
                 <motion.div
                   key={product.p_id}
                   initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  animate={{ 
+                    opacity: isDeleting ? 0.5 : 1, 
+                    scale: isDeleting ? 0.95 : 1 
+                  }}
                   transition={{ delay: index * 0.1 }}
                   className="border border-stone-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                 >
@@ -244,13 +231,14 @@ const AdminProducts = () => {
 
                     {/* Action Buttons */}
                     <div className="flex space-x-2">
-                      <Link
-                        to={`/admin/products/${product.p_id}`}
-                        className="flex-1 flex items-center justify-center space-x-1 bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded text-sm transition-colors"
+                      <button
+                        onClick={() => handleDelete(product.p_id, product.p_name)}
+                        disabled={isDeleting}
+                        className="flex-1 flex items-center justify-center space-x-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-3 py-2 rounded text-sm transition-colors"
                       >
-                        <Eye className="w-4 h-4" />
-                        <span>View</span>
-                      </Link>
+                        <Trash2 className="w-4 h-4" />
+                        <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
+                      </button>
                       <Link
                         to={`/admin/products/${product.p_id}/edit`}
                         className="flex-1 flex items-center justify-center space-x-1 bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded text-sm transition-colors"
@@ -269,8 +257,8 @@ const AdminProducts = () => {
             <Package className="w-12 h-12 text-stone-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-stone-900 mb-2">No products found</h3>
             <p className="text-stone-500 mb-4">
-              {filters?.search || filters?.category || filters?.brand
-                ? 'Try adjusting your search filters'
+              {filters?.search
+                ? 'Try adjusting your search terms'
                 : 'Get started by adding your first product'
               }
             </p>
@@ -285,11 +273,11 @@ const AdminProducts = () => {
         )}
 
         {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
+        {pagination && pagination.total_pages > 1 && (
           <div className="px-6 py-4 border-t border-stone-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-stone-700">
-                Showing {((filters?.page || 1 - 1) * 12) + 1} to{' '}
+                Showing {((filters?.page || 1) - 1) * 12 + 1} to{' '}
                 {Math.min((filters?.page || 1) * 12, stats?.total || 0)} of{' '}
                 {stats?.total || 0} products
               </div>
@@ -297,12 +285,12 @@ const AdminProducts = () => {
                 <button
                   onClick={() => handlePageChange((filters?.page || 1) - 1)}
                   disabled={(filters?.page || 1) <= 1}
-                  className="px-3 py-2 border border-stone-300 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="px-3 py-2 border border-stone-300 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm text-stone-700"
                 >
                   Previous
                 </button>
                 <div className="flex space-x-1">
-                  {Array.from({ length: Math.min(pagination?.totalPages || 1, 5) }, (_, i) => {
+                  {Array.from({ length: Math.min(pagination.total_pages, 5) }, (_, i) => {
                     const page = i + 1;
                     return (
                       <button
@@ -311,7 +299,7 @@ const AdminProducts = () => {
                         className={`px-3 py-2 rounded-lg text-sm ${
                           page === (filters?.page || 1)
                             ? 'bg-amber-600 text-white'
-                            : 'border border-stone-300 hover:bg-stone-50'
+                            : 'border border-stone-300 hover:bg-stone-50 text-stone-700'
                         }`}
                       >
                         {page}
@@ -321,8 +309,8 @@ const AdminProducts = () => {
                 </div>
                 <button
                   onClick={() => handlePageChange((filters?.page || 1) + 1)}
-                  disabled={(filters?.page || 1) >= (pagination?.totalPages || 1)}
-                  className="px-3 py-2 border border-stone-300 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  disabled={(filters?.page || 1) >= pagination.total_pages}
+                  className="px-3 py-2 border border-stone-300 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm text-stone-700"
                 >
                   Next
                 </button>

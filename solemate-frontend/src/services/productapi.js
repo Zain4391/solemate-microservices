@@ -41,9 +41,23 @@ api.interceptors.response.use(
 export const productApi = {
 
     // product related
-    getAllProducts: (page = 1, limit = 10) => {
-        return api.get(`/products?page=${page}&limit=${limit}`);
-    },
+    // Update your getAllProducts function in productApi to support filters
+getAllProducts: (page = 1, limit = 10, filters = {}) => {
+    const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString()
+    });
+    
+    // Add filter parameters if they exist
+    if (filters.search) params.append('search', filters.search);
+    if (filters.category) params.append('category', filters.category);
+    if (filters.brand) params.append('brand', filters.brand);
+    if (filters.minPrice) params.append('minPrice', filters.minPrice.toString());
+    if (filters.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
+    if (filters.userPreference) params.append('userPreference', filters.userPreference);
+    
+    return api.get(`/products?${params.toString()}`);
+},
     getProductById: (id) => api.get(`/products/${id}`),
     getProductSizes: (id) => api.get(`/products/${id}/sizes`),
     createProduct: (productData) => api.post('/products', productData),

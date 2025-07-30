@@ -101,7 +101,6 @@ export const postImage = async (req, res) => {
 
 export const postMultipleImages = async (req, res) => {
     const { id } = req.params; // product ID
-    const { filenames } = req.body; // Array of filenames
     
     console.log("Files received:", req.files);
     console.log("Body:", req.body);
@@ -117,7 +116,13 @@ export const postMultipleImages = async (req, res) => {
           error: true 
         });
       }
-  
+
+      const filenames = files.map((file, index) => 
+        `${Date.now()}_${index}_${file.originalname}`
+      );
+
+      console.log(filenames);
+      
       if (!filenames || !Array.isArray(filenames) || filenames.length !== files.length) {
         return res.status(400).json({
           message: "Filenames array is required and must match the number of files.",

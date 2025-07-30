@@ -43,6 +43,18 @@ import { adminOrderDetailsLoader } from './loaders/adminOrderDetailsLoader.js';
 import { adminOrderStatusAction } from './actions/adminOrderDetailsAction.js';
 import AdminProducts from './pages/AdminProducts.jsx';
 import { adminProductsLoader } from './loaders/adminProductsLoader.js';
+import AddProduct from './pages/AddProduct.jsx';
+import { addProductLoader } from './loaders/addProductLoader.js';
+import { addProductAction } from './actions/addProductAction.js';
+import { adminProductsAction } from './actions/deleteProduct.js';
+import EditProduct from './pages/EditProduct.jsx';
+import { editProductLoader } from './loaders/editProductLoader.js';
+import { editProductAction } from './actions/editProductAction.js';
+import AdminUsers from './pages/AdminUsers.jsx';
+import { adminUsersLoader } from './loaders/adminUsersLoader.js';
+import { adminUsersAction } from './actions/adminUserAction.js';
+import AdminPayments from './pages/AdminPayments.jsx';
+import { adminPaymentsLoader } from './loaders/adminPaymentLoader.js';
 
 const router = createBrowserRouter([
   {
@@ -172,6 +184,34 @@ const router = createBrowserRouter([
         path: "products",
         element: <AdminProducts />,
         loader: adminProductsLoader,
+        action: adminProductsAction,
+        errorElement: <Error />
+      },
+      {
+        path: "products/new",
+        element: <AddProduct />,
+        loader: addProductLoader,
+        action: addProductAction,
+        errorElement: <Error />
+      },
+      {
+        path:"products/:id/edit",
+        element: <EditProduct />,
+        loader: editProductLoader,
+        action: editProductAction,
+        errorElement: <Error />
+      },
+      {
+        path: "users",
+        element: <AdminUsers />,
+        loader: adminUsersLoader,
+        action: adminUsersAction,
+        errorElement: <Error />
+      },
+      {
+        path: "payments",
+        element: <AdminPayments />,
+        loader: adminPaymentsLoader,
         errorElement: <Error />
       }
     ]

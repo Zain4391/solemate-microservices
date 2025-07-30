@@ -43,5 +43,24 @@ export const paymentApiService = {
     confirmPayment: (confirmData) => paymentApi.post('/confirm-payment', confirmData),
     getPaymentStatus: (paymentId) => paymentApi.get(`/payment-status/${paymentId}`),
     getPaymentsByOrderId: (orderId) => paymentApi.get(`/order/${orderId}`),
-    mockConfirmPayment: (paymentId) => paymentApi.post(`/mock-confirm-payment/${paymentId}`)
+    mockConfirmPayment: (paymentId) => paymentApi.post(`/mock-confirm-payment/${paymentId}`),
+    getAllPayments: (page = 1, limit = 10, status = null, search = null) => {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString()
+        });
+        
+        if (status) params.append('status', status);
+        if (search) params.append('search', search);
+        
+        return paymentApi.get(`/all?${params.toString()}`);
+      },
+      getAllPaymentsForStats: () => {
+        const params = new URLSearchParams({
+          page: '1',
+          limit: '1000' // Large number to get all payments
+        });
+        
+        return paymentApi.get(`/all?${params.toString()}`);
+      }
 };

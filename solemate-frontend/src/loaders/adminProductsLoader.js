@@ -9,34 +9,18 @@ export const adminProductsLoader = async ({ request }) => {
     const category = url.searchParams.get('category') || '';
     const brand = url.searchParams.get('brand') || '';
     
-    // Use your productApi functions properly
-    let productsResponse;
-    if (search || category || brand) {
-      // For filtered requests, use the direct API call with query params
-      const queryParams = new URLSearchParams({
-        page: page.toString(),
-        limit: '12',
-        ...(search && { search }),
-        ...(category && { category }),
-        ...(brand && { brand })
-      });
-      productsResponse = await productApi.api.get(`/products?${queryParams}`);
-    } else {
-      // Use your getAllProducts function
-      productsResponse = await productApi.getAllProducts(page, 12);
-    }
-    
-    // Use your API functions for categories and brands
-    const [categoriesResponse, brandsResponse] = await Promise.all([
+    // Make API calls - your getAllProducts already supports all these filters
+    const [productsResponse, categoriesResponse, brandsResponse] = await Promise.all([
+      productApi.getAllProducts(page, 12, { search, category, brand }),
       productApi.getCategories(),
       productApi.getBrands()
     ]);
     
-    // Fix the data extraction based on your actual API response
-    const products = productsResponse.data.data.products || [];
-    const pagination = productsResponse.data.data.pagination || null;
-    const categories = categoriesResponse.data.data.categories || [];
-    const brands = brandsResponse.data.data || [];
+    // Extract data from responses - adjust based on your actual API response structure
+    const products = productsResponse.data?.data?.products || productsResponse.data?.products || [];
+    const pagination = productsResponse.data?.data?.pagination || productsResponse.data?.pagination || null;
+    const categories = categoriesResponse.data?.data?.categories || categoriesResponse.data?.categories || [];
+    const brands = brandsResponse.data?.data?.brands || brandsResponse.data?.brands || [];
     
     // Calculate total stock for each product
     const productsWithStock = products.map(product => ({
@@ -56,7 +40,7 @@ export const adminProductsLoader = async ({ request }) => {
         brand
       },
       stats: {
-        total: pagination?.total_items || productsWithStock.length,
+        total: pagination?.total_items || pagination?.total || productsWithStock.length,
         displayed: productsWithStock.length
       }
     };
@@ -79,13 +63,14 @@ export const adminProductEditLoader = async ({ params }) => {
       productApi.getProductById(productId),
       productApi.getCategories(),
       productApi.getBrands(),
-      productApi.getProductImages(productId).catch(() => ({ data: { data: [] } })) // Handle no images gracefully
+      productApi.getProductImages(productId).catch(() => ({ data: [] })) // Handle no images gracefully
     ]);
     
-    const product = productResponse.data.data;
-    const categories = categoriesResponse.data.data || [];
-    const brands = brandsResponse.data.data || [];
-    const images = imagesResponse.data.data || [];
+    // Extract data with proper fallbacks
+    const product = productResponse.data?.data || productResponse.data;
+    const categories = categoriesResponse.data?.data?.categories || categoriesResponse.data?.categories || [];
+    const brands = brandsResponse.data?.data?.brands || brandsResponse.data?.brands || [];
+    const images = imagesResponse.data?.data || imagesResponse.data || [];
     
     if (!product) {
       throw new Response('Product not found', { status: 404 });
@@ -115,8 +100,9 @@ export const adminProductCreateLoader = async () => {
       productApi.getBrands()
     ]);
     
-    const categories = categoriesResponse.data.data || [];
-    const brands = brandsResponse.data.data || [];
+    // Extract data with proper fallbacks
+    const categories = categoriesResponse.data?.data?.categories || categoriesResponse.data?.categories || [];
+    const brands = brandsResponse.data?.data?.brands || brandsResponse.data?.brands || [];
     
     return {
       categories,

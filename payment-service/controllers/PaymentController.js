@@ -45,7 +45,6 @@ export const confirmPayment = async (req, res) => {
         if (stripeResult.data.status === 'succeeded') {
             // Update payment status to completed
             const result = await PaymentService.updatePaymentStatus(payment_id, 'COMPLETED', {
-                completed_at: new Date().toISOString()
             });
             
             res.status(200).json({

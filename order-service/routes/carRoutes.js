@@ -7,12 +7,14 @@
  */
 
 import express from 'express';
-import { addToCart, getCart, removeFromCart, updateCartItem } from '../controllers/cartController.js';
+import { addToCart, clearCart, getCart, removeFromCart, updateCartItem } from '../controllers/cartController.js';
 import { authMiddleware } from '../middleware/VerifyAdmin.js';
 
 const cartRouter = express.Router();
 
-cartRouter.get('/:userId', authMiddleware, getCart);
+cartRouter.get('/users/:userId', authMiddleware, getCart);
+cartRouter.delete('/users/:userId', authMiddleware, clearCart);
+
 cartRouter.post('/', authMiddleware, addToCart);
 cartRouter.put('/:cartId', authMiddleware, updateCartItem);
 cartRouter.delete('/:cartId', authMiddleware, removeFromCart);

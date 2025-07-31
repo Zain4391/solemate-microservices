@@ -4,8 +4,10 @@ api => instance of axios with default config
 */
 
 import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const APP_BASE_URL = 'http://localhost:3001/api';
+const APP_BASE_URL = `http://${process.env.VITE_AWS_ELASTIC_IP}:3001/api`;
 
 
 export const api = axios.create({

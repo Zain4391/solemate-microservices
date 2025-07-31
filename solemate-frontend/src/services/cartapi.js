@@ -5,7 +5,7 @@ api => instance of axios with default config
 
 import axios from "axios"
 
-const CART_BASE_URL = "http://localhost:3003/api/cart"
+const CART_BASE_URL = `http://${process.env.VITE_AWS_ELASTIC_IP}:3003/api/cart`;
 
 export const api = axios.create({
     baseURL: CART_BASE_URL,

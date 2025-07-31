@@ -5,7 +5,7 @@ Follows the same pattern as cartApi
 
 import axios from "axios"
 
-const ORDER_BASE_URL = "http://localhost:3003/api/orders"
+const ORDER_BASE_URL = `http://${process.env.VITE_AWS_ELASTIC_IP}:3003/api/orders`;
 
 export const orderApi = axios.create({
     baseURL: ORDER_BASE_URL,

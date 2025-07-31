@@ -5,7 +5,7 @@ Follows the same pattern as cartApi
 
 import axios from "axios"
 
-const PAYMENT_BASE_URL = "http://localhost:3004/api/payments"
+const PAYMENT_BASE_URL = `http://${process.env.VITE_AWS_ELASTIC_IP}:3004/api/payments`;
 
 export const paymentApi = axios.create({
     baseURL: PAYMENT_BASE_URL,

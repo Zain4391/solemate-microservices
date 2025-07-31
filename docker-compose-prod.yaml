@@ -31,7 +31,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3002
-      - REDIS_HOST=valkey
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_REFRESH_EXPIRES_IN=4{JWT_REFRESH_EXPIRES_IN}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - valkey
 
@@ -43,7 +49,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3003
-      - REDIS_HOST=valkey
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_REFRESH_EXPIRES_IN=4{JWT_REFRESH_EXPIRES_IN}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - valkey
 
@@ -55,7 +67,15 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3004
-      - REDIS_HOST=valkey
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - JWT_REFRESH_EXPIRES_IN=4{JWT_REFRESH_EXPIRES_IN}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - valkey
 

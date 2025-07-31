@@ -1,9 +1,7 @@
-name: Deploy Microservices
+name: Build and Deploy
 
 on:
   push:
-    branches: [main, develop]
-  pull_request:
     branches: [main]
 
 env:
@@ -11,43 +9,15 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: |
-            user-service/package-lock.json
-            product-service/package-lock.json
-            order-service/package-lock.json
-            payment-service/package-lock.json
-      
-      - name: Install dependencies and test
-        run: |
-          services=("user-service" "product-service" "order-service" "payment-service")
-          for service in "${services[@]}"; do
-            echo "Testing $service"
-            cd $service
-            npm ci
-            npm test || echo "No tests found for $service"
-            cd ..
-          done
-
-  build-and-push:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     strategy:
       matrix:
         service: [user-service, product-service, order-service, payment-service]
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
       
       - name: Log in to Container Registry
         uses: docker/login-action@v3
@@ -55,16 +25,16 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+          
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.service }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.service }}
           tags: |
             type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=raw,value=latest
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -75,36 +45,16 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
-    needs: build-and-push
+    needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Deploy to staging
+      - name: Deploy to server
         run: |
-          echo "Deploying to staging environment"
-          # Add your deployment commands here
-          # Examples:
-          # - SSH to server and run docker-compose pull && docker-compose up -d
-          # - Use kubectl for Kubernetes deployment
-          # - Deploy to cloud platforms (AWS ECS, Google Cloud Run, etc.)
-      
-      - name: Health check
-        run: |
-          echo "Running health checks"
-          # Add health check commands
-          # curl -f http://your-staging-url/health || exit 1
-
-  deploy-production:
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    
-    steps:
-      - name: Deploy to production
-        run: |
-          echo "Deploying to production"
-          # Production deployment commands
+          echo "Images built and pushed!"
+          echo "Next: Pull these images on your server"
+          echo "Images available at:"
+          echo "- ghcr.io/${{ github.repository }}/user-service:latest"
+          echo "- ghcr.io/${{ github.repository }}/product-service:latest"
+          echo "- ghcr.io/${{ github.repository }}/order-service:latest"
+          echo "- ghcr.io/${{ github.repository }}/payment-service:latest"

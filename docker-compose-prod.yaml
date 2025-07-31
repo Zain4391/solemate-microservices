@@ -9,7 +9,7 @@ services:
       - valkey_data:/data
 
   user-service:
-    image: ghcr.io/zain4391/solemate-microservices/user-service:latest
+    image: ghcr.io/zain4391/user-service:latest
     restart: always
     ports:
       - "3001:3001"
@@ -18,7 +18,7 @@ services:
       - PORT=3001
 
   product-service:
-    image: ghcr.io/zain4391/solemate-microservices/product-service:latest
+    image: ghcr.io/zain4391/product-service:latest
     restart: always
     ports:
       - "3002:3002"
@@ -30,7 +30,7 @@ services:
       - valkey
 
   order-service:
-    image: ghcr.io/zain4391/solemate-microservices/order-service:latest
+    image: ghcr.io/zain4391/order-service:latest
     restart: always
     ports:
       - "3003:3003"
@@ -42,7 +42,7 @@ services:
       - valkey
 
   payment-service:
-    image: ghcr.io/zain4391/solemate-microservices/payment-service:latest
+    image: ghcr.io/zain4391/payment-service:latest
     restart: always
     ports:
       - "3004:3004"

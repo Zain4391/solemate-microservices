@@ -36,7 +36,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
       - JWT_REFRESH_EXPIRES_IN=4{JWT_REFRESH_EXPIRES_IN}
-      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_HOST=valkey
       - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - valkey
@@ -54,7 +54,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
       - JWT_REFRESH_EXPIRES_IN=4{JWT_REFRESH_EXPIRES_IN}
-      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_HOST=valkey
       - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - valkey
@@ -74,7 +74,7 @@ services:
       - JWT_REFRESH_EXPIRES_IN=4{JWT_REFRESH_EXPIRES_IN}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
-      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_HOST=valkey
       - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - valkey

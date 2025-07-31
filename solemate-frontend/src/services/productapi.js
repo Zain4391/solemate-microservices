@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const PRODUCTS_BASE_URL = `http://${process.env.VITE_AWS_ELASTIC_IP}:3002/api`;
+const PRODUCTS_BASE_URL = `http://${import.meta.env.VITE_AWS_ELASTIC_IP}:3002/api`;
 
 
 export const api = axios.create({

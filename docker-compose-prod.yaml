@@ -9,7 +9,7 @@ services:
       - valkey_data:/data
 
   user-service:
-    image: ghcr.io/zain4391/solemate-microservices/user-service:latest
+    image: ghcr.io/zain4391/user-service:latest
     restart: always
     ports:
       - "3001:3001"
@@ -24,56 +24,37 @@ services:
       - BCRYPT_ROUNDS=${BCRYPT_ROUNDS}
 
   product-service:
-    image: ghcr.io/zain4391/solemate-microservices/product-service:latest
+    image: ghcr.io/zain4391/product-service:latest
     restart: always
     ports:
       - "3002:3002"
     environment:
       - NODE_ENV=production
       - PORT=3002
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=valkey
     depends_on:
       - valkey
 
   order-service:
-    image: ghcr.io/zain4391/solemate-microservices/order-service:latest
+    image: ghcr.io/zain4391/order-service:latest
     restart: always
     ports:
       - "3003:3003"
     environment:
       - NODE_ENV=production
       - PORT=3003
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=valkey
     depends_on:
       - valkey
 
   payment-service:
-    image: ghcr.io/zain4391/solemate-microservices/payment-service:latest
+    image: ghcr.io/zain4391/payment-service:latest
     restart: always
     ports:
       - "3004:3004"
     environment:
       - NODE_ENV=production
       - PORT=3004
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-      - JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN}
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
       - REDIS_HOST=valkey
     depends_on:
       - valkey

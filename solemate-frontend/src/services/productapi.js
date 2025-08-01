@@ -2,7 +2,9 @@ import axios from "axios";
 
 const PRODUCTS_BASE_URL = `http://${import.meta.env.VITE_AWS_ELASTIC_IP}:3002/api`;
 
-
+// Add this temporarily to see what's happening
+console.log('Elastic IP:', import.meta.env.VITE_AWS_ELASTIC_IP);
+console.log('Full URL:', `http://${import.meta.env.VITE_AWS_ELASTIC_IP}:3002/api`);
 export const api = axios.create({
     baseURL: PRODUCTS_BASE_URL,
     headers: {
